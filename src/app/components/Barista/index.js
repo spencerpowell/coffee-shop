@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { CoffeeShopContext } from '../Context';
 
@@ -6,24 +6,17 @@ export function Barista(props) {
   const { actions } = React.useContext(CoffeeShopContext);
   const { orderQueue, isWorking } = props;
   const nextOrder = orderQueue[0];
-  console.log('next order');
-  console.log(nextOrder);
   let creationTime = 0;
-
-  console.log('isWorking');
-  console.log(isWorking);
 
   if (nextOrder) {
     creationTime = nextOrder.creationTime;
-    console.log('current creation time');
-    console.log(creationTime);
-    //setWorkingStatus(true);
   }
 
   const pickupOrderIfPossible = order => {
     if (order) {
       actions.setWorkingStatus(true);
       actions.completeOrder();
+      actions.moveToCoffeeCounter(order);
     } else {
       actions.setWorkingStatus(false);
     }
@@ -31,11 +24,10 @@ export function Barista(props) {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      console.log(`this will run after ${creationTime} seconds`);
       pickupOrderIfPossible(nextOrder);
     }, creationTime * 1000);
     return () => clearTimeout(timer);
-  });
+  }, [orderQueue]);
 
   return (
     <Wrapper>
